@@ -1,0 +1,22 @@
+#
+# this is the results for first run of my programs
+#
+# inputs:
+# units    = metric
+# distance = 100
+# gas      = 10
+#
+
+Please select which unit system you would like to use: (M,m, Metric, metric) or usc (U,u,USC,usc) : m
+
+You have selected metric units
+
+Please enter the distance drive in km      : 100
+Please enter the gas amount used in liters : 10
+
+                                 USC               Metric
+ Distance ______________:     62.137 miles        100.000 km
+ Gas ___________________:      2.642 gallons       10.000 liters
+ Consumption ___________:     23.522 mpg           10.000 l/100km
+
+ Gas Consumption Rating : Good
