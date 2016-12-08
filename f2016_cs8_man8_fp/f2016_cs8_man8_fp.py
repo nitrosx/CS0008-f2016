@@ -6,7 +6,7 @@
 # class      : CS0008-f2016
 # instructor : Max Novelli (man8@pitt.edu)
 #
-# Assignment #3
+# Final Project
 #
 # Description:
 # A customer needs to process a number of text files (called data files) that contain names and distance run by study participants.
@@ -64,6 +64,121 @@
 # Luka,1,12.87
 # …
 #
+# In this program, the student should make the best use of everything that has learn so far in this class,
+# reuse as much as he/she can from assignment #3, improve upon it and he/she has to use a class named participants
+# that has 3 properties:
+# - name: name of the participant. String.
+# - distance: accumulator for total distance run by the participant. Float.
+# - runs: accumulator for the total number of runs run by the participant.
+#
+# and, at least, the following methods:
+# - addDistance(d)
+#   add single distance to the distance accumulator and increments runs by 1. Argument d is a single float.
+# - addDistances(ld)
+#   add an array of distances to distance accumulator. Argument ld is a list of floats. getDistance()
+#   get the current value of the distance accumulator.
+# - getName()
+#   get the name of the participant of the current instance
+# - getDistance()
+#   get the total distance run computed
+# - getRuns()
+#   get the total number of runs
+# - __init__ (n,d=0)
+#   initializer method. set name and initial distance if provided. If initial distance is not specified,
+#   it should be set to zero
+# - __str__()
+#   stringify method. Returns a string with name, total distance run and how many distances the object added,
+#   according to the following format:
+#   Name : xxxxxxxxxxxxxxxxxxx. Distance run : yyyy.yyyy. Runs : zzzz
+#
+#   where xxxxxxxxxxxxxxxxxxx is a right align string of 20 characters for the name,
+#   yyyy.yyyy is the total distance run with 9 digits, decimal point and 4 decimals,
+#   and zzzz is the number of runs with 4 digits, no decimals.
+#
+
+#
+# class participant definition according to specs from header
+# class definition
+class participant:
+    """ participant class"""
+
+    # properties
+    # name of the participant
+    name = "unknown"
+    # total distance run by the participant
+    distance = 0
+    # total number of runs by the participant
+    runs = 0
+
+    # methods
+    # initializer methods
+    def __init__(self, name, distance=0):
+        # set name
+        self.name = name
+        # set distance if non zero
+        if distance > 0:
+            # set distance
+            self.distance = distance
+            # set number of runs accordingly
+            self.runs = 1
+            # end if
+
+    # end def __init__
+
+    # addDistance method
+    def addDistance(self, distance):
+        if distance > 0:
+            self.distance += distance
+            self.runs += 1
+            # end if
+
+    # end def addDistance
+
+    # addDistances method
+    def addDistances(self, distances):
+        # loops over list
+        for distance in distances:
+            if distance > 0:
+                self.distance += distance
+                self.runs += 1
+                # end if
+                # end for
+
+    # end def addDistance
+
+    # return the name of the participant
+    def getName(self):
+        return self.name
+
+    # end def getName
+
+    # return the total distance run computed
+    def getDistance(self):
+        return self.distance
+
+    # end def getDistance
+
+    # return the number of runs
+    def getRuns(self):
+        return self.runs
+
+    # end def getRuns
+
+    # stringify the object
+    def __str__(self):
+        return \
+            "Name : " + format(self.name, '>20s') + \
+            ". Distance run : " + format(self.distance, '9.4f') + \
+            ". Runs : " + format(self.runs, '4d')
+        # end def __init__
+
+    # convert to csv
+    def tocsv(self):
+        return ','.join([self.name, str(self.runs), str(self.distance)])
+    # end def tocsv
+
+# end class participant
+
 
 #
 # function getDataFromFile(file)
@@ -76,16 +191,11 @@
 # Output
 #  - data: (list) list of dictionaries, with each dictionary defined as follow:
 #          { 'name': <participant_name>, 'distance' : <distance_run> }
-#  - nlines: (integer) number of lines read from the file
 def getDataFromFile(file):
     # initialize output list
     output = []
-    # initialize number of lines read
-    nlines = 0;
     # read file line by line
     for line in open(file,'r'):
-        # update number of lines read
-        nlines += 1
         # exclude first line that is the header
         # we can recongize it because it contains the word "distance"
         if "distance" in line:
@@ -105,7 +215,7 @@ def getDataFromFile(file):
         # end try/except
     # end for
     # return data records
-    return output, nlines
+    return output
 # end def getDataFromFile
 
 #
@@ -123,107 +233,102 @@ except:
 # read data from data files
 # we assume that the data files are accessible locally or we have the full path
 #
-# rawData is a list of 3 list which contains dictionaries with data from each file
-rawData = [getDataFromFile(file) for file in dataFiles]
-
+# rawData is a list of all the records from each data file
+# according to posting #43 of http://stackoverflow.com/questions/4344017/how-can-i-get-the-concatenation-of-two-lists-in-python-without-modifying-either
+# sum() can concatenate lists in a list if it is provided with an empty list as initial value
+rawData = sum([getDataFromFile(file) for file in dataFiles],[])
 #
-# given that we do not keep track of the file the data comes from
-# we need to flatten the structure
-uniqueListData = [item2 for item1 in rawData for item2 in item1[0]]
-#
-# the previous statment can be complicated and hard to understand
+# the previous statement can be complicated and hard to understand
 # it is equivalent to do the following:
-# uniqueListData = [];
-#  for item1 in rawData:
-#     for item2 in item1:
-#          uniqueListData.append(item2)
-#      # end for item2
-#  # end for item1
+# rawData = [];
+# for file in dataFiles:
+#    for item2 in getDataFromFile(file):
+#       rawData.append(item2)
+#    # end for item2
+# # end for file
 #
+# or:
+# rawData = [];
+# for file in dataFiles:
+#    rawData.extend(getDataFromFile(file))
+# # end for file
 
 #
 # number of files read
-# this is equivalent to the number of elements in rawData
-numberFiles = len(rawData)
+# this is equivalent to the number of elements in dataFiles
+numberFiles = len(dataFiles)
 
 #
 # total number of lines read
 # this is equivalent to the sum of the second item in each item of rawData
-totalLines = sum([item[1] for item in rawData])
+totalLines = len(rawData)
 
 #
 # total number distance run by every participant
 # this is equivalent of the sum of the "distance" element of the items in the uniqueListdata
-totalDistanceRun = sum([item['distance'] for item in uniqueListData])
+totalDistanceRun = sum([item['distance'] for item in rawData])
 
 #
 # compute distance run for each participant and how many records we have for each one of them
 # initialize all the accmulators
 # dictionary with one element for each participant whose value is
 # the list of all the distances found in data for the participant
-participantDistances = {}
+participants = {}
 
 # loops on all the records
-for item in uniqueListData:
+for item in rawData:
     # check if the names has already been found previously or if it is new
     # if it is new, initialize elements in the accumulators
-    if not item['name'] in participantDistances.keys():
-        participantDistances[item['name']] = []
+    if not item['name'] in participants.keys():
+        participants[item['name']] = participant(item['name'])
     # insert distance in the list for this participant
-    participantDistances[item['name']].append(item['distance'])
+    participants[item['name']].addDistance(item['distance'])
 # end for
 
 # initialize accumulators
-# distance run for each participant
-participantDistanceRun = {}
 # minum distance run with name
 minDistance = { 'name' : None, 'distance': None }
 # maximum distance run with name
 maxDistance = { 'name' : None, 'distance': None }
 # appearences dictionary
-appearences = {}
+apparences = {}
 #
 # computes the total distance run for each participant iterating on all the participants
-for name, values in participantDistances.items():
-    # compute distance for current name / participant
-    participantDistanceRun[name] = sum(values)
+for name, object in participants.items():
+    # get the total distance run by this participant
+    distance = object.getDistance()
     # check if we need to update min
     # if this is the first iteration or if the current participant distance is lower than the current min
-    if minDistance['name'] is None or minDistance['distance'] > participantDistanceRun[name]:
+    if minDistance['name'] is None or minDistance['distance'] > distance:
         minDistance['name'] = name
-        minDistance['distance'] = participantDistanceRun[name]
+        minDistance['distance'] = distance
     # end if
     # check if we need to update max
     # if this is the first iteration or if the current participant distance is lower than the current min
-    if maxDistance['name'] is None or maxDistance['distance'] < participantDistanceRun[name]:
+    if maxDistance['name'] is None or maxDistance['distance'] < distance:
         maxDistance['name'] = name
-        maxDistance['distance'] = participantDistanceRun[name]
+        maxDistance['distance'] = distance
     # end if
     #
-    # appearences is equivalent to the length of the distances
-    participantAppearences = len(values)
+    # get number of runs, aka apparences from participant object
+    participantAppearences = object.getRuns()
     #
     # check if we need to initialize this entry
-    if not participantAppearences in appearences.keys():
-        appearences[participantAppearences] = []
-    appearences[participantAppearences].append(name)
+    if not participantAppearences in apparences.keys():
+        apparences[participantAppearences] = []
+    apparences[participantAppearences].append(name)
 # end for
 
 #
 # compute total number of participant
 # this is equivalent to the length of the participantDistances
-totalNumberOfParticipant = len(participantDistances);
+totalNumberOfParticipant = len(participants);
 
 #
-#  compute total number of participants with more than one record
-totalNumberOfParticipantWithMultipleRecords = 0;
-for app, names in appearences.items():
-    # skip participants with only one record
-    if app == 1:
-        continue
-    # add number of participants with this number of records
-    totalNumberOfParticipantWithMultipleRecords += len(names)
-# end for
+# compute total number of participants with more than one record
+# extract all the participants that have 2 or more runs
+# and count th enumber of elements in the list with len()
+totalNumberOfParticipantWithMultipleRecords = len([1 for item in participants.values() if item.getRuns() > 1])
 
 #
 # set format strings
@@ -258,9 +363,9 @@ fh = open(outputFile,'w')
 # write header in file
 fh.write('name,records,distance\n')
 # loop on all the participants
-for name in participantDistanceRun.keys():
+for name, object in participants.items():
     # write line in file
-    fh.write(','.join([name, str(len(participantDistances[name])), str(participantDistanceRun[name])]) + '\n')
+    fh.write(object.tocsv() + '\n')
 #end for
 # close files
 fh.close()
